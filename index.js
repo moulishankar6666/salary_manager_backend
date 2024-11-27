@@ -1,9 +1,13 @@
 const express = require("express");
+const dotenv = require("dotenv");
 const app = express();
 const db = require("./database_connection");
 
 //middleware to parse json requests
 app.use(express.json());
+dotenv.config();
+
+const port = process.env.PORT;
 
 app.post("/addspend", async (req, res) => {
   try {
@@ -35,6 +39,6 @@ app.get("/allspends", async (req, res) => {
   }
 });
 
-app.listen(4000, (err) => {
-  console.log("server running on port 4000");
+app.listen(port, (err) => {
+  console.log("server running on port ", port);
 });
