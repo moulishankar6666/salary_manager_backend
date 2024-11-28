@@ -1,21 +1,28 @@
-const sqlite3 = require("sqlite3").verbose();
+// const sqlite3 = require("sqlite3");
+// const path = require("path");
+// const { open } = require("sqlite");
 
-const db = new sqlite3.Database("./salarymanager.db", (err) => {
-  if (err) {
-    console.error("Error opening database", err.message);
-  } else {
-    console.log("Connected to Sqlite database");
-  }
-});
+// let db;
+// const connectToDB = async () => {
+//   try {
+//     db = await open({
+//       filename: path.join(__dirname, "salarymanager.db"),
+//       driver: sqlite3.Database,
+//     });
+//     console.log("DB is connected successfully");
+//   } catch (error) {
+//     console.error(error.message);
+//     process.exit(1);
+//   }
+// };
+// connectToDB();
 
-const query =
-  "CREATE TABLE IF NOT EXISTS spends (id INTEGER PRIMARY KEY AUTOINCREMENT,  spending_name TEXT NOT NULL, spending_type TEXT NOT NULL , amount INTEGER NOT NULL );";
-db.run(query, (err) => {
-  if (err) {
-    console.error(err.message);
-  } else {
-    console.log("spends table created");
-  }
-});
-
-module.exports = db;
+// const query =
+//   "CREATE TABLE IF NOT EXISTS spends (id INTEGER PRIMARY KEY AUTOINCREMENT  ,  spending_name TEXT NOT NULL, spending_type TEXT NOT NULL , amount INTEGER NOT NULL );";
+// db.run(query, (err) => {
+//   if (err) {
+//     console.error("Error", err.message);
+//   } else {
+//     console.log("spends table created");
+//   }
+// });
