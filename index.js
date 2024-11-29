@@ -12,6 +12,17 @@ app.use(cors());
 
 const port = 3000;
 
+const dbConnection = async () => {
+  try {
+    db = await open({
+      filename: path.join(__dirname, "app.db"),
+      driver: sqlite3.Database,
+    });
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+
 app.post("/add", async (req, res) => {});
 
 app.get("/all", async (req, res) => {
