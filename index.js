@@ -18,6 +18,7 @@ const dbConnection = async () => {
       filename: path.join(__dirname, "app.db"),
       driver: sqlite3.Database,
     });
+    console.log("database connected successfully");
   } catch (error) {
     console.log(error.message);
   }
@@ -26,7 +27,13 @@ const dbConnection = async () => {
 app.post("/add", async (req, res) => {});
 
 app.get("/all", async (req, res) => {
-  res.json({ data: "working all api" });
+  try {
+    const query = `SELECT * FROM spends;`;
+    const response = await db.all(query);
+    res.json({ data: response });
+  } catch (err) {
+    console.error("Error on all request", err.message);
+  }
 });
 
 app.listen(port, (err) => {
