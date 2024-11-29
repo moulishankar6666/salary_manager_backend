@@ -10,7 +10,7 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-const port = 8090;
+const port = 8091;
 
 const dbConnection = async () => {
   try {
@@ -55,5 +55,16 @@ app.get("/all", async (req, res) => {
     res.json({ data: response });
   } catch (err) {
     console.error("Error_on_all_request", err.message);
+  }
+});
+
+app.delete("/delete/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const query = `delete from spends where id=?`;
+    const response = db.run(query, [id]);
+    res.json({ status: `deleted row no ${id}` });
+  } catch (err) {
+    res.json({ error: err.message });
   }
 });
