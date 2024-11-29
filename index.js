@@ -10,7 +10,7 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-const port = 3000;
+const port = 8090;
 
 const dbConnection = async () => {
   try {
@@ -18,24 +18,28 @@ const dbConnection = async () => {
       filename: path.join(__dirname, "app.db"),
       driver: sqlite3.Database,
     });
+    console;
+    app.listen(port, () => {
+      console.log("server running on port ", port);
+    });
     console.log("database connected successfully");
   } catch (error) {
     console.log(error.message);
+    process.exit(1);
   }
 };
+
+dbConnection();
 
 app.post("/add", async (req, res) => {});
 
 app.get("/all", async (req, res) => {
   try {
-    const query = `SELECT * FROM spends;`;
+    const query = `select * from spends;`;
+
     const response = await db.all(query);
     res.json({ data: response });
   } catch (err) {
-    console.error("Error on all request", err.message);
+    console.error("Error_on_all_request", err.message);
   }
-});
-
-app.listen(port, (err) => {
-  console.log("server running on port ", port);
 });
