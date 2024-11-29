@@ -18,7 +18,7 @@ const dbConnection = async () => {
       filename: path.join(__dirname, "app.db"),
       driver: sqlite3.Database,
     });
-    console;
+
     app.listen(port, () => {
       console.log("server running on port ", port);
     });
@@ -31,7 +31,21 @@ const dbConnection = async () => {
 
 dbConnection();
 
-app.post("/add", async (req, res) => {});
+app.post("/add", async (req, res) => {
+  const { spending_name, spending_type, amount } = req.body;
+
+  try {
+    const query = `INSERT INTO spends ( spending_name, spending_type, amount) VALUES(?,?,?);`;
+    const response = await db.run(query, [
+      spending_name,
+      spending_type,
+      amount,
+    ]);
+    res.json({ data: response, status: "Insert successfully" });
+  } catch (err) {
+    console.log("Error :", err.message);
+  }
+});
 
 app.get("/all", async (req, res) => {
   try {
