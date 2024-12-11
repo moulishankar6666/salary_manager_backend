@@ -5,7 +5,6 @@ const sqlite3 = require("sqlite3");
 const { open } = require("sqlite");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const { error } = require("console");
 
 //middleware to parse json requests
 let db;
