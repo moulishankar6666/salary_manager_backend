@@ -3,7 +3,7 @@ const path = require("path");
 const cors = require("cors");
 const sqlite3 = require("sqlite3");
 const { open } = require("sqlite");
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
 //middleware to parse json requests
