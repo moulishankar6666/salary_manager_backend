@@ -148,7 +148,7 @@ app.get("/monthspends", jwtVerification, async (req, res) => {
     const user = await db.get("select * from users where username=?", [
       username,
     ]);
-    const query = `select * from spends where userid=?; `;
+    const query = `select spendid,spendname,amount,cast(strftime("%H",datetime) as INT) as hour,cast(strftime("%M",datetime) as INT)as minute from spends where userid=? order by hour, minute desc; `;
     const data = await db.all(query, [user.id]);
     res.json({ response: data });
   } catch (err) {
