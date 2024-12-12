@@ -142,14 +142,21 @@ app.post("/addspend", jwtVerification, async (req, res) => {
   }
 });
 
-app.get("/monthspends", jwtVerification, async (req, res) => {
+app.get("/monthspends/:month", jwtVerification, async (req, res) => {
   try {
     const { username } = req;
+    const { month } = req.params;
+
     const user = await db.get("select * from users where username=?", [
       username,
     ]);
-    const query = `select spendid,spendname,amount,cast(strftime("%H",datetime) as INT) as hour,cast(strftime("%M",datetime) as INT)as minute from spends where userid=? order by hour, minute desc; `;
-    const data = await db.all(query, [user.id]);
+    const query = `select spendid,spendname,spendtype,amount,datetime,cast(strftime('%m',datetime) as INT)as month,cast(strftime('%Y',datetime) as INT)as year from spends where userid=? and month=? and year=? order by spendtype,datetime asc;`;
+    const data = await db.all(query, [
+      user.id,
+      month.slice(5, 8),
+      month.slice(0, 4),
+    ]);
+
     res.json({ response: data });
   } catch (err) {
     res.json({ error: err.message });
