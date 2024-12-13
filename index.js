@@ -90,19 +90,21 @@ app.post("/signin", async (req, res) => {
           salaryAmount: user.amount,
         };
         const jwtToken = jwt.sign(payload, "my-token");
-        res.json({ response: jwtToken, status: "Login success" }).status(200);
+        res.json({ response: jwtToken, status: "Login success" });
+        res.status(200);
       } else {
-        res.json({ response: `Invalid password` }).status(400);
+        res.json({ response: `Invalid password` });
+        res.status(404);
       }
     } else {
-      res
-        .json({
-          response: `You don't have an account with username ${username}`,
-        })
-        .status(400);
+      res.json({
+        response: `You don't have an account with username ${username}`,
+      });
+      res.status(404);
     }
   } catch (err) {
     res.json({ error: err.message });
+    res.status(404);
   }
 });
 
@@ -136,9 +138,9 @@ app.post("/addspend", jwtVerification, async (req, res) => {
       parseInt(amount),
       datetime,
     ]);
-    res.json({ response: "Insert successfully" });
+    res.json({ response: "Insert successfully" }).status = 200;
   } catch (err) {
-    res.json({ error: err.message });
+    res.json({ error: err.message }).status = 404;
   }
 });
 
@@ -158,8 +160,10 @@ app.get("/monthspends/:month", jwtVerification, async (req, res) => {
     ]);
 
     res.json({ response: data });
+    res.status(200);
   } catch (err) {
     res.json({ error: err.message });
+    res.status(404);
   }
 });
 
