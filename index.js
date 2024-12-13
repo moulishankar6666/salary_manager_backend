@@ -134,20 +134,16 @@ app.post("/addspend", jwtVerification, async (req, res) => {
       username,
     ]);
     const query = `INSERT INTO spends (userid,spendname,spendtype,amount,datetime) VALUES(?,?,?,?,?);`;
-    if (username && req.body) {
-      const response = await db.run(query, [
-        user.id,
-        spendname,
-        spendtype,
-        parseInt(amount),
-        datetime,
-      ]);
-      res.json({ response: "Insert successfully" });
-      res.status(200);
-    } else {
-      res.json({ error: "some thing went wrong" });
-      res.status(404);
-    }
+
+    const response = await db.run(query, [
+      user.id,
+      spendname,
+      spendtype,
+      parseInt(amount),
+      datetime,
+    ]);
+    res.json({ response: "Insert successfully" });
+    res.status(200);
   } catch (err) {
     res.json({ error: err.message });
     res.status(404);
