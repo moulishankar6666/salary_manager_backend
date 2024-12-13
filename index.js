@@ -126,21 +126,31 @@ app.get("/allusers", async (req, res) => {
 
 app.post("/addspend", jwtVerification, async (req, res) => {
   const { username } = req;
-  const user = await db.get("select * from users where username=?", [username]);
+
   const { spendname, spendtype, amount, datetime } = req.body;
 
   try {
-    const query = `INSERT INTO spends (userid,spendname,spendtype,amount,datetime) VALUES(?,?,?,?,?);`;
-    const response = await db.run(query, [
-      user.id,
-      spendname,
-      spendtype,
-      parseInt(amount),
-      datetime,
+    const user = await db.get("select * from users where username=?", [
+      username,
     ]);
-    res.json({ response: "Insert successfully" }).status = 200;
+    const query = `INSERT INTO spends (userid,spendname,spendtype,amount,datetime) VALUES(?,?,?,?,?);`;
+    if (username && req.body) {
+      const response = await db.run(query, [
+        user.id,
+        spendname,
+        spendtype,
+        parseInt(amount),
+        datetime,
+      ]);
+      res.json({ response: "Insert successfully" });
+      res.status(200);
+    } else {
+      res.json({ error: "some thing went wrong" });
+      res.status(404);
+    }
   } catch (err) {
-    res.json({ error: err.message }).status = 404;
+    res.json({ error: err.message });
+    res.status(404);
   }
 });
 
