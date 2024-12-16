@@ -128,6 +128,7 @@ app.post("/addspend", jwtVerification, async (req, res) => {
   const { username } = req;
 
   const { spendname, spendtype, amount, datetime } = req.body;
+  console.log(req.body);
 
   try {
     const user = await db.get("select * from users where username=?", [
@@ -179,7 +180,36 @@ app.delete("/delete/:id", async (req, res) => {
     const query = `delete from spends where id=?`;
     const response = db.run(query, [id]);
     res.json({ status: `deleted row no ${id}` });
+    res.status(200);
   } catch (err) {
     res.json({ error: err.message });
+    res.status(404);
+  }
+});
+
+app.get("/dayspends/:day", jwtVerification, async (req, res) => {
+  const { day } = req.params;
+  try {
+    const query =
+      "select spendid,spendname,spendtype,amount,datetime,cast(strftime('%d',datetime)as INTEGER) as day from spends where day=? order by datetime";
+    const data = await db.all(query, [day]);
+    res.json({ response: data });
+    res.status(200);
+  } catch (err) {
+    res.json({ error: err.message });
+    res.status(404);
+  }
+});
+
+app.get("/profile", jwtVerification, async (req, res) => {
+  const { username } = req;
+  try {
+    const query = "select * from where username=?";
+    const response = await db.get(query, [username]);
+    res.json({ response: response });
+    res.status(200);
+  } catch (error) {
+    res.json({ error: err.message });
+    res.status(404);
   }
 });
