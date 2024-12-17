@@ -108,21 +108,21 @@ app.post("/signin", async (req, res) => {
   }
 });
 
-app.get("/allusers", async (req, res) => {
-  try {
-    const query1 = `select * from users;`;
-    const query2 = `select * from spends;`;
-    // const deletetable = "delete from spends;";
+// app.get("/allusers", async (req, res) => {
+//   try {
+//     const query1 = `select * from users;`;
+//     const query2 = `select * from spends;`;
+//     // const deletetable = "delete from spends;";
 
-    const response1 = await db.all(query1);
-    const response2 = await db.all(query2);
-    // const response3 = await db.run(deletetable);
-    res.json({ users: response1, spends: response2 });
-    // res.json({ spends: response3 });
-  } catch (err) {
-    console.error("Error_on_all_request", err.message);
-  }
-});
+//     const response1 = await db.all(query1);
+//     const response2 = await db.all(query2);
+//     // const response3 = await db.run(deletetable);
+//     res.json({ users: response1, spends: response2 });
+//     // res.json({ spends: response3 });
+//   } catch (err) {
+//     console.error("Error_on_all_request", err.message);
+//   }
+// });
 
 app.post("/addspend", jwtVerification, async (req, res) => {
   const { username } = req;
