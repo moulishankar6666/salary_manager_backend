@@ -205,7 +205,8 @@ app.get("/dayspends/:day", jwtVerification, async (req, res) => {
 app.get("/profile", jwtVerification, async (req, res) => {
   const { username } = req;
   try {
-    const query1 = "select * from users where username=? ";
+    const query1 =
+      "select id,username,fullname,salary from users where username=? ";
     const userInfo = await db.get(query1, [username]);
     if (userInfo !== undefined) {
       const totalamount =
