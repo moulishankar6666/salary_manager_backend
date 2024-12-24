@@ -5,6 +5,7 @@ const sqlite3 = require("sqlite3");
 const { open } = require("sqlite");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const { userInfo } = require("os");
 
 //middleware to parse json requests
 let db;
@@ -174,7 +175,7 @@ app.get("/monthspends/:month", jwtVerification, async (req, res) => {
   }
 });
 
-app.delete("/delete/:id", async (req, res) => {
+app.delete("/delete/:id", jwtVerification, async (req, res) => {
   const { id } = req.params;
   try {
     const query = `delete from spends where id=?`;
@@ -204,12 +205,37 @@ app.get("/dayspends/:day", jwtVerification, async (req, res) => {
 app.get("/profile", jwtVerification, async (req, res) => {
   const { username } = req;
   try {
-    const query = "select * from where username=?";
-    const response = await db.get(query, [username]);
-    res.json({ response: response });
-    res.status(200);
-  } catch (error) {
-    res.json({ error: err.message });
-    res.status(404);
+    const query1 = "select * from users where username=? ";
+    const userInfo = await db.get(query1, [username]);
+    if (userInfo !== undefined) {
+      const totalamount =
+        "select sum(amount) as total from spends where userid=? ;";
+      const totalamountresponse = await db.all(totalamount, [userInfo.id]);
+
+      const houseExpences =
+        "select sum(amount) as total from spends where userid=? and spendtype=?;";
+      const houseExpencesresponse = await db.all(houseExpences, [
+        userInfo.id,
+        "House Expences",
+      ]);
+      const Luxury =
+        "select sum(amount) as total from spends where userid=? and spendtype=?;";
+      const Luxuryresponse = await db.all(Luxury, [userInfo.id, "Luxury"]);
+      const savings =
+        "select sum(amount) as total from spends where userid=? and spendtype=?;";
+      const savingsresponse = await db.all(savings, [userInfo.id, "Savings"]);
+
+      res
+        .json({
+          userInfo,
+          totalamount: totalamountresponse[0].total,
+          housespend: houseExpencesresponse[0].total,
+          savings: savingsresponse[0].total,
+          Luxury: Luxuryresponse[0].total,
+        })
+        .status(200);
+    }
+  } catch (err) {
+    res.json({ error: err.message }).status(404);
   }
 });
