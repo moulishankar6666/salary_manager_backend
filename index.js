@@ -62,7 +62,7 @@ app.post("/signup", async (req, res) => {
     if (!user) {
       const hashedPassword = await bcrypt.hash(password, 10);
       const createUser = await db.run(
-        `insert into users(username,password,salary,fullname) values(?,?,?,?);`,
+        `insert into users(username,password,salary,fullname) values(?,?,?,?); `,
         [username, hashedPassword, parseInt(salary), fullname]
       );
       res.json({ response: `${fullname} is signup successfully` }).status(200);
@@ -134,7 +134,7 @@ app.post("/addspend", jwtVerification, async (req, res) => {
     const user = await db.get("select * from users where username=?", [
       username,
     ]);
-    const query = `INSERT INTO spends (userid,spendname,spendtype,amount,datetime) VALUES(?,?,?,?,?);`;
+    const query = `INSERT INTO spends (userid,spendname,spendtype,amount,datetime) VALUES(?,?,?,?,?);commit;`;
 
     const response = await db.run(query, [
       user.id,
