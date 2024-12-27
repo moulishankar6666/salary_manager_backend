@@ -235,10 +235,10 @@ app.get("/profile", jwtVerification, async (req, res) => {
           ],
           housespend: [
             houseExpencesresponse[0].total,
-            totalamountresponse[0].taskcount,
+            houseExpencesresponse[0].taskcount,
           ],
-          savings: [savingsresponse[0].totaltotalamountresponse[0].taskcount],
-          Luxury: [Luxuryresponse[0].total, totalamountresponse[0].taskcount],
+          savings: [savingsresponse[0].total, savingsresponse[0].taskcount],
+          Luxury: [Luxuryresponse[0].total, Luxuryresponse[0].taskcount],
         })
         .status(200);
     }
