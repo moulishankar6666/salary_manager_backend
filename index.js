@@ -210,29 +210,35 @@ app.get("/profile", jwtVerification, async (req, res) => {
     const userInfo = await db.get(query1, [username]);
     if (userInfo !== undefined) {
       const totalamount =
-        "select sum(amount) as total from spends where userid=? ;";
+        "select sum(amount) as total,count(amount) as taskcount from spends where userid=? ;";
       const totalamountresponse = await db.all(totalamount, [userInfo.id]);
 
       const houseExpences =
-        "select sum(amount) as total from spends where userid=? and spendtype=?;";
+        "select sum(amount) as total,count(amount) as taskcount from spends where userid=? and spendtype=?;";
       const houseExpencesresponse = await db.all(houseExpences, [
         userInfo.id,
         "House Expences",
       ]);
       const Luxury =
-        "select sum(amount) as total from spends where userid=? and spendtype=?;";
+        "select sum(amount) as total,count(amount) as taskcount from spends where userid=? and spendtype=?;";
       const Luxuryresponse = await db.all(Luxury, [userInfo.id, "Luxury"]);
       const savings =
-        "select sum(amount) as total from spends where userid=? and spendtype=?;";
+        "select sum(amount) as total,count(amount) as taskcount from spends where userid=? and spendtype=?;";
       const savingsresponse = await db.all(savings, [userInfo.id, "Savings"]);
 
       res
         .json({
           userInfo,
-          totalamount: totalamountresponse[0].total,
-          housespend: houseExpencesresponse[0].total,
-          savings: savingsresponse[0].total,
-          Luxury: Luxuryresponse[0].total,
+          totalamount: [
+            totalamountresponse[0].total,
+            totalamountresponse[0].taskcount,
+          ],
+          housespend: [
+            houseExpencesresponse[0].total,
+            totalamountresponse[0].taskcount,
+          ],
+          savings: [savingsresponse[0].totaltotalamountresponse[0].taskcount],
+          Luxury: [Luxuryresponse[0].total, totalamountresponse[0].taskcount],
         })
         .status(200);
     }
