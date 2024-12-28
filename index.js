@@ -135,7 +135,7 @@ app.post("/addspend", jwtVerification, async (req, res) => {
     const user = await db.get("select * from users where username=?", [
       username,
     ]);
-    const query = `INSERT INTO spends (userid,spendname,spendtype,amount,datetime) VALUES(?,?,?,?,?);commit;`;
+    const query = `INSERT INTO spends (userid,spendname,spendtype,amount,datetime) VALUES(?,?,?,?,?);`;
 
     const response = await db.run(query, [
       user.id,
