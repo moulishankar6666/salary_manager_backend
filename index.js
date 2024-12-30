@@ -91,7 +91,7 @@ app.post("/signin", async (req, res) => {
           salaryAmount: user.amount,
         };
         const jwtToken = jwt.sign(payload, "my-token");
-        res.json({ response: jwtToken, status: "Login success" });
+        res.json({ response: jwtToken, status: "SingIn success" });
         res.status(200);
       } else {
         res.json({ response: `Invalid password` });
@@ -101,7 +101,7 @@ app.post("/signin", async (req, res) => {
       res.json({
         response: `You don't have an account with username ${username}`,
       });
-      res.status(404);
+      res.status = 404;
     }
   } catch (err) {
     res.json({ error: err.message });
