@@ -91,21 +91,16 @@ app.post("/signin", async (req, res) => {
           salaryAmount: user.amount,
         };
         const jwtToken = jwt.sign(payload, "my-token");
-        res.json({ response: jwtToken, status: "SingIn success" });
-        res.status(200);
+        res.status(200).json({ response: jwtToken, status: "SingIn success" });
       } else {
-        res.json({ response: `Invalid password` });
-        res.status(404);
       }
     } else {
-      res.json({
-        response: `You don't have an account with username ${username}`,
+      res.status(400).json({
+        error: `You don't have an account with  ${username}`,
       });
-      res.status = 404;
     }
   } catch (err) {
-    res.json({ error: err.message });
-    res.status(404);
+    res.status(404).json({ error: err.message });
   }
 });
 
