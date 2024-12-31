@@ -169,7 +169,7 @@ app.get("/monthspends/:month", jwtVerification, async (req, res) => {
     const user = await db.get("select * from users where username=?", [
       username,
     ]);
-    const query = `select spendid,spendname,spendtype,amount,datetime,cast(strftime('%m',datetime) as INT)as month,cast(strftime('%Y',datetime) as INT)as year from spends where userid=? and month=? and year=? order by datetime asc;`;
+    const query = `select userid, spendid,spendname,spendtype,amount,datetime,cast(strftime('%m',datetime) as INT)as month,cast(strftime('%Y',datetime) as INT)as year from spends where userid=? and month=? and year=? order by datetime asc;`;
     const data = await db.all(query, [
       user.id,
       month.slice(5, 8),
@@ -194,11 +194,12 @@ app.delete("/delete/:id", jwtVerification, async (req, res) => {
 });
 
 app.get("/dayspends/:day", jwtVerification, async (req, res) => {
+  const { username } = req;
   const { day } = req.params;
   try {
     const query =
-      "select spendid,spendname,spendtype,amount,datetime,cast(strftime('%d',datetime)as INTEGER) as day from spends where day=? order by datetime";
-    const data = await db.all(query, [day]);
+      "select spendid,userid,spendname,spendtype,amount,datetime,cast(strftime('%d',datetime)as INTEGER) as day from spends where username=? and day=? order by datetime";
+    const data = await db.all(query, [username, day]);
     res.status(200).json({ response: data });
   } catch (err) {
     res.status(404).json({ error: err.message });
