@@ -57,28 +57,33 @@ const jwtVerification = (req, res, next) => {
 
 app.post("/signup", async (req, res) => {
   const { username, password, salary, fullname } = req.body;
+
   try {
     const checkUser = `select * from users where username=?;`;
     const user = await db.get(checkUser, [username]);
+
     if (!user) {
       const hashedPassword = await bcrypt.hash(password, 10);
       const createUser = await db.run(
-        `insert into users(username,password,salary,fullname) values(?,?,?,?); `,
+        `insert into users(username,password,salary,fullname) Values(?,?,?,?); `,
         [username, hashedPassword, parseInt(salary), fullname]
       );
+
       const payload = {
-        username: user.username,
-        fullname: user.fullname,
-        salaryAmount: user.amount,
+        username: username,
+        fullname: fullname,
+        salaryAmount: salary,
       };
       const jwtToken = jwt.sign(payload, "my-token");
-      res
-        .json({ token: jwtToken, response: `${fullname} signup successfully` })
-        .status(200);
+
+      res.status(200).json({
+        token: jwtToken,
+        response: `${fullname} Sign Up Successfully`,
+      });
     } else {
       res
-        .json({ error: `You have an account with this username${username}` })
-        .status(400);
+        .status(400)
+        .json({ error: `You have an account with this username ${username}` });
     }
   } catch (err) {
     res.json({ error: err.message });
@@ -101,6 +106,9 @@ app.post("/signin", async (req, res) => {
         const jwtToken = jwt.sign(payload, "my-token");
         res.status(200).json({ token: jwtToken, status: "SignIn success" });
       } else {
+        res.status(400).json({
+          error: `Entered password incorrect`,
+        });
       }
     } else {
       res.status(400).json({
