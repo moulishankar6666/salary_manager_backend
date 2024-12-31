@@ -169,9 +169,9 @@ app.get("/monthspends/:month", jwtVerification, async (req, res) => {
     const user = await db.get("select * from users where username=?", [
       username,
     ]);
-    const query = `select userid, spendid,spendname,spendtype,amount,datetime,cast(strftime('%m',datetime) as INT)as month,cast(strftime('%Y',datetime) as INT)as year from spends where userid=? and month=? and year=? order by datetime asc;`;
+    const query = `select userid, spendid,spendname,spendtype,amount,datetime,cast(strftime('%m',datetime) as INT)as month,cast(strftime('%Y',datetime) as INT)as year from spends where username=? and month=? and year=? order by datetime asc;`;
     const data = await db.all(query, [
-      user.id,
+      username,
       month.slice(5, 8),
       month.slice(0, 4),
     ]);
