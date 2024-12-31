@@ -66,10 +66,18 @@ app.post("/signup", async (req, res) => {
         `insert into users(username,password,salary,fullname) values(?,?,?,?); `,
         [username, hashedPassword, parseInt(salary), fullname]
       );
-      res.json({ response: `${fullname} is signup successfully` }).status(200);
+      const payload = {
+        username: user.username,
+        fullname: user.fullname,
+        salaryAmount: user.amount,
+      };
+      const jwtToken = jwt.sign(payload, "my-token");
+      res
+        .json({ token: jwtToken, response: `${fullname} signup successfully` })
+        .status(200);
     } else {
       res
-        .json({ response: `You have an account with username ${username}` })
+        .json({ error: `You have an account with this username${username}` })
         .status(400);
     }
   } catch (err) {
