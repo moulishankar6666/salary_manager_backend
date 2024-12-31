@@ -91,7 +91,7 @@ app.post("/signin", async (req, res) => {
           salaryAmount: user.amount,
         };
         const jwtToken = jwt.sign(payload, "my-token");
-        res.status(200).json({ response: jwtToken, status: "SingIn success" });
+        res.status(200).json({ token: jwtToken, status: "SignIn success" });
       } else {
       }
     } else {
@@ -139,11 +139,9 @@ app.post("/addspend", jwtVerification, async (req, res) => {
       parseInt(amount),
       datetime,
     ]);
-    res.json({ response: "Insert successfully" });
-    res.status(200);
+    res.status(200).json({ response: "Insert successfully" });
   } catch (err) {
-    res.json({ error: err.message });
-    res.status(404);
+    res.status(404).json({ error: err.message });
   }
 });
 
@@ -162,11 +160,9 @@ app.get("/monthspends/:month", jwtVerification, async (req, res) => {
       month.slice(0, 4),
     ]);
 
-    res.json({ response: data });
-    res.status(200);
+    res.status(200).json({ response: data });
   } catch (err) {
-    res.json({ error: err.message });
-    res.status(404);
+    res.status(404).json({ error: err.message });
   }
 });
 
@@ -175,11 +171,9 @@ app.delete("/delete/:id", jwtVerification, async (req, res) => {
   try {
     const query = `delete from spends where id=?`;
     const response = db.run(query, [id]);
-    res.json({ status: `deleted row no ${id}` });
-    res.status(200);
+    res.status(200).json({ status: `deleted row no ${id}` });
   } catch (err) {
-    res.json({ error: err.message });
-    res.status(404);
+    res.status(404).json({ error: err.message });
   }
 });
 
@@ -189,11 +183,9 @@ app.get("/dayspends/:day", jwtVerification, async (req, res) => {
     const query =
       "select spendid,spendname,spendtype,amount,datetime,cast(strftime('%d',datetime)as INTEGER) as day from spends where day=? order by datetime";
     const data = await db.all(query, [day]);
-    res.json({ response: data });
-    res.status(200);
+    res.status(200).json({ response: data });
   } catch (err) {
-    res.json({ error: err.message });
-    res.status(404);
+    res.status(404).json({ error: err.message });
   }
 });
 
@@ -221,23 +213,21 @@ app.get("/profile", jwtVerification, async (req, res) => {
         "select sum(amount) as total,count(amount) as taskcount from spends where userid=? and spendtype=?;";
       const savingsresponse = await db.all(savings, [userInfo.id, "Savings"]);
 
-      res
-        .json({
-          userInfo,
-          totalamount: [
-            totalamountresponse[0].total,
-            totalamountresponse[0].taskcount,
-          ],
-          housespend: [
-            houseExpencesresponse[0].total,
-            houseExpencesresponse[0].taskcount,
-          ],
-          savings: [savingsresponse[0].total, savingsresponse[0].taskcount],
-          Luxury: [Luxuryresponse[0].total, Luxuryresponse[0].taskcount],
-        })
-        .status(200);
+      res.status(200).json({
+        userInfo,
+        totalamount: [
+          totalamountresponse[0].total,
+          totalamountresponse[0].taskcount,
+        ],
+        housespend: [
+          houseExpencesresponse[0].total,
+          houseExpencesresponse[0].taskcount,
+        ],
+        savings: [savingsresponse[0].total, savingsresponse[0].taskcount],
+        Luxury: [Luxuryresponse[0].total, Luxuryresponse[0].taskcount],
+      });
     }
   } catch (err) {
-    res.json({ error: err.message }).status(404);
+    res.status(404).json({ error: err.message });
   }
 });
