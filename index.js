@@ -202,7 +202,7 @@ app.get("/dayspends/:day", jwtVerification, async (req, res) => {
     ]);
     const query =
       "select spendid,userid,spendname,spendtype,amount,datetime,cast(strftime('%d',datetime)as INTEGER) as day from spends where userid=? and day=? order by datetime";
-    const data = await db.all(query, [us, day]);
+    const data = await db.all(query, [user.id, day]);
     res.status(200).json({ response: data });
   } catch (err) {
     res.status(404).json({ error: err.message });
