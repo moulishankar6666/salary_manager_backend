@@ -46,7 +46,7 @@ const jwtVerification = (req, res, next) => {
   } else {
     jwt.verify(jwtToken, "my-token", async (error, payload) => {
       if (error) {
-        res.json({ error: error.message });
+        res.status(404).json({ error: error.message });
       } else {
         req.username = payload.username;
         next();
@@ -169,7 +169,11 @@ app.get("/monthspends/:month", jwtVerification, async (req, res) => {
     const user = await db.get("select * from users where username=?", [
       username,
     ]);
-    const query = `select userid, spendid,spendname,spendtype,amount,datetime,cast(strftime('%m',datetime) as INT)as month,cast(strftime('%Y',datetime) as INT)as year from spends where userid=? and month=? and year=? order by datetime asc;`;
+    const query = `select userid, spendid,spendname,spendtype,amount,datetime from spends
+     where userid=? 
+     group by spendid
+     having cast(strftime('%m',datetime) as INT)=? and cast(strftime('%Y',datetime) as INT)=? 
+     order by datetime asc;`;
     const data = await db.all(query, [
       user.id,
       month.slice(5, 8),
@@ -200,8 +204,11 @@ app.get("/dayspends/:day", jwtVerification, async (req, res) => {
     const user = await db.get("select * from users where username=?", [
       username,
     ]);
-    const query =
-      "select spendid,userid,spendname,spendtype,amount,datetime,cast(strftime('%d',datetime)as INTEGER) as day from spends where userid=? and day=? order by datetime";
+    const query = `select spendid,userid,spendname,spendtype,amount,datetime from spends
+       where userid=? 
+       group by spendid 
+       having cast(strftime('%d',datetime)as INTEGER)=? 
+       order by datetime;`;
     const data = await db.all(query, [user.id, day]);
     res.status(200).json({ response: data });
   } catch (err) {
