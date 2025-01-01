@@ -140,7 +140,6 @@ app.post("/addspend", jwtVerification, async (req, res) => {
   const { username } = req;
 
   const { spendname, spendtype, amount, datetime } = req.body;
-  console.log(req.body);
 
   try {
     const user = await db.get("select * from users where username=?", [
@@ -172,7 +171,7 @@ app.get("/monthspends/:month", jwtVerification, async (req, res) => {
     const query = `select userid, spendid,spendname,spendtype,amount,datetime from spends
      where userid=? 
      group by spendid
-     having cast(strftime('%m',datetime) as INT)=? and cast(strftime('%Y',datetime) as INT)=? 
+     having cast(strftime('%m',datetime) as INT)=? and cast(strftime('%Y',datetime) as INT)=?
      order by datetime asc;`;
     const data = await db.all(query, [
       user.id,
