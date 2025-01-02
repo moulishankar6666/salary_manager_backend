@@ -120,22 +120,6 @@ app.post("/signin", async (req, res) => {
   }
 });
 
-// app.get("/allusers", async (req, res) => {
-//   try {
-//     const query1 = `select * from users;`;
-//     const query2 = `select * from spends;`;
-//     // const deletetable = "delete from spends;";
-
-//     const response1 = await db.all(query1);
-//     const response2 = await db.all(query2);
-//     // const response3 = await db.run(deletetable);
-//     res.json({ users: response1, spends: response2 });
-//     // res.json({ spends: response3 });
-//   } catch (err) {
-//     console.error("Error_on_all_request", err.message);
-//   }
-// });
-
 app.post("/addspend", jwtVerification, async (req, res) => {
   const { username } = req;
 
@@ -190,7 +174,7 @@ app.get("/monthspends/:month", jwtVerification, async (req, res) => {
 app.delete("/delete/:id", jwtVerification, async (req, res) => {
   const { id } = req.params;
   try {
-    const query = `delete from spends where id=?`;
+    const query = `delete from spends where spendid=?`;
     const response = db.run(query, [id]);
     res.status(200).json({ status: `deleted row no ${id}` });
   } catch (err) {
@@ -267,6 +251,8 @@ app.get("/profile", jwtVerification, async (req, res) => {
         savings: [savingsresponse[0].total, savingsresponse[0].taskcount],
         Luxury: [Luxuryresponse[0].total, Luxuryresponse[0].taskcount],
       });
+    } else {
+      res.status(404).json({ error: "user not found" });
     }
   } catch (err) {
     res.status(404).json({ error: err.message });
