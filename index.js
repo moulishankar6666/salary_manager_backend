@@ -248,12 +248,14 @@ app.get("/profile", jwtVerification, async (req, res) => {
       const savings =
         "select sum(amount) as total,count(amount) as taskcount from spends where userid=? and spendtype=?;";
       const savingsresponse = await db.all(savings, [userInfo.id, "Savings"]);
-      // const userSpends = await db.all("select * from spends where userid=?", [
-      //   userInfo.id,
-      // ]);
+      const userSpends = await db.all(
+        "select * from spends where userid=? order by datetime limit 5;",
+        [userInfo.id]
+      );
 
       res.status(200).json({
         userInfo,
+        userSpends,
         totalamount: [
           totalamountresponse[0].total,
           totalamountresponse[0].taskcount,
