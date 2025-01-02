@@ -140,6 +140,7 @@ app.post("/addspend", jwtVerification, async (req, res) => {
   const { username } = req;
 
   const { spendname, spendtype, amount, datetime } = req.body;
+  console.log(req.body);
 
   try {
     const user = await db.get("select * from users where username=?", [
@@ -154,6 +155,7 @@ app.post("/addspend", jwtVerification, async (req, res) => {
       parseInt(amount),
       datetime,
     ]);
+    console.log(response);
     res.status(200).json({ response: "Insert successfully" });
   } catch (err) {
     res.status(404).json({ error: err.message });
@@ -196,19 +198,27 @@ app.delete("/delete/:id", jwtVerification, async (req, res) => {
   }
 });
 
-app.get("/dayspends/:day", jwtVerification, async (req, res) => {
+app.get("/dayspends/:date", jwtVerification, async (req, res) => {
   const { username } = req;
-  const { day } = req.params;
+  const { date } = req.params;
+  const dateArr = date.split(" ");
+
   try {
     const user = await db.get("select * from users where username=?", [
       username,
     ]);
     const query = `select spendid,userid,spendname,spendtype,amount,datetime from spends
-       where userid=? 
-       group by spendid 
-       having cast(strftime('%d',datetime)as INTEGER)=? 
+       where userid=?
+       group by spendid
+       having cast(strftime('%d',datetime)as INTEGER)=? and cast(strftime('%m',datetime)as INTEGER)=? and cast(strftime('%Y',datetime)as INTEGER)=?
        order by datetime;`;
-    const data = await db.all(query, [user.id, day]);
+
+    const data = await db.all(query, [
+      user.id,
+      dateArr[0],
+      dateArr[1],
+      dateArr[2],
+    ]);
     res.status(200).json({ response: data });
   } catch (err) {
     res.status(404).json({ error: err.message });
@@ -238,6 +248,9 @@ app.get("/profile", jwtVerification, async (req, res) => {
       const savings =
         "select sum(amount) as total,count(amount) as taskcount from spends where userid=? and spendtype=?;";
       const savingsresponse = await db.all(savings, [userInfo.id, "Savings"]);
+      // const userSpends = await db.all("select * from spends where userid=?", [
+      //   userInfo.id,
+      // ]);
 
       res.status(200).json({
         userInfo,
