@@ -248,7 +248,10 @@ app.get("/profile/:date", jwtVerification, async (req, res) => {
       const savingsresponse = await db.all(savings, [userInfo.id, month, year]);
 
       const userSpends = await db.all(
-        "select * from spends where userid=? group by spendid having cast(strftime('%m',datetime)as INTEGER)=? and cast(strftime('%Y',datetime)as INTEGER)=? order by datetime desc limit 5;",
+        `select * from spends 
+        where userid=?  and cast(strftime('%m',datetime)as INTEGER)=? and cast(strftime('%Y',datetime)as INTEGER)=? 
+        order by datetime desc 
+        limit 5;`,
         [userInfo.id, month, year]
       );
 
