@@ -209,32 +209,47 @@ app.get("/dayspends/:date", jwtVerification, async (req, res) => {
   }
 });
 
-app.get("/profile", jwtVerification, async (req, res) => {
+app.get("/profile/:date", jwtVerification, async (req, res) => {
   const { username } = req;
+  const { date } = req.params;
+  const [month, year] = date.split("-");
   try {
     const query1 =
       "select id,username,fullname,salary from users where username=? ";
     const userInfo = await db.get(query1, [username]);
     if (userInfo !== undefined) {
-      const totalamount =
-        "select sum(amount) as total,count(amount) as taskcount from spends where userid=? ;";
-      const totalamountresponse = await db.all(totalamount, [userInfo.id]);
+      const totalamount = `select sum(amount) as total, count(amount) as taskcount from spends 
+         where userid=? and  cast(strftime('%m',datetime)as INTEGER)=? and cast(strftime('%Y',datetime)as INTEGER)=?;`;
+      const totalamountresponse = await db.all(totalamount, [
+        userInfo.id,
+        month,
+        year,
+      ]);
 
-      const houseExpences =
-        "select sum(amount) as total,count(amount) as taskcount from spends where userid=? and spendtype=?;";
+      const houseExpences = `select sum(amount) as total, count(amount) as taskcount from spends
+       where userid=? and spendtype='House Expences' and cast(strftime('%m',datetime)as INTEGER)=? and cast(strftime('%Y',datetime)as INTEGER)=?`;
       const houseExpencesresponse = await db.all(houseExpences, [
         userInfo.id,
-        "House Expences",
+        month,
+        year,
       ]);
-      const Luxury =
-        "select sum(amount) as total,count(amount) as taskcount from spends where userid=? and spendtype=?;";
-      const Luxuryresponse = await db.all(Luxury, [userInfo.id, "Luxury"]);
-      const savings =
-        "select sum(amount) as total,count(amount) as taskcount from spends where userid=? and spendtype=?;";
-      const savingsresponse = await db.all(savings, [userInfo.id, "Savings"]);
+
+      const Luxury = `select sum(amount) as total, count(amount) as taskcount from spends
+         where userid=? and spendtype=? and cast(strftime('%m',datetime) as INTEGER)=? and cast(strftime('%Y',datetime) as INTEGER)=?`;
+      const Luxuryresponse = await db.all(Luxury, [
+        userInfo.id,
+        "Luxury",
+        month,
+        year,
+      ]);
+
+      const savings = `select sum(amount) as total, count(amount) as taskcount from spends
+      where userid=? and spendtype='Savings' and cast(strftime('%m',datetime)as INTEGER)=? and cast(strftime('%Y',datetime)as INTEGER)=?`;
+      const savingsresponse = await db.all(savings, [userInfo.id, month, year]);
+
       const userSpends = await db.all(
-        "select * from spends where userid=? order by datetime desc limit 5;",
-        [userInfo.id]
+        "select * from spends where userid=? group by spendid having cast(strftime('%m',datetime)as INTEGER)=? and cast(strftime('%Y',datetime)as INTEGER)=? order by datetime desc limit 5;",
+        [userInfo.id, month, year]
       );
 
       res.status(200).json({
